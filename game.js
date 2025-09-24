@@ -72,6 +72,7 @@ class DocumentProcessingGame {
         
         // Play button
         document.getElementById('playBtn').addEventListener('click', () => {
+            console.log('Play button clicked!');
             this.startGame();
         });
         
@@ -128,14 +129,20 @@ class DocumentProcessingGame {
             screen.classList.add('hidden');
         });
         
-        // Show target screen
-        const targetScreen = document.getElementById(screenName + 'Screen');
-        if (targetScreen) {
-            targetScreen.classList.remove('hidden');
-            this.currentScreen = screenName;
-            console.log('Screen shown:', screenName);
+        // Show target screen (if it exists)
+        if (screenName !== 'game') {
+            const targetScreen = document.getElementById(screenName + 'Screen');
+            if (targetScreen) {
+                targetScreen.classList.remove('hidden');
+                this.currentScreen = screenName;
+                console.log('Screen shown:', screenName);
+            } else {
+                console.error('Screen not found:', screenName + 'Screen');
+            }
         } else {
-            console.error('Screen not found:', screenName + 'Screen');
+            // For 'game' screen, just hide all overlays
+            this.currentScreen = 'game';
+            console.log('Game screen - all overlays hidden');
         }
         
         // Show/hide game UI

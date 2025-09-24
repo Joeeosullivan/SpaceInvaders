@@ -89,7 +89,8 @@
             <!-- Game Over Screen -->
             <div id="gameOverScreen" class="game-screen hidden">
                 <div class="screen-content">
-                    <h1>Game Over!</h1>
+                    <h1>🎯 Game Complete!</h1>
+                    
                     <div class="final-stats">
                         <h2>Final Score: <span id="finalScore">0</span></h2>
                         <div class="stats-grid">
@@ -105,28 +106,57 @@
                                 <span class="stat-label">Documents Processed:</span>
                                 <span id="finalProcessed">0</span>
                             </div>
+                            <div class="stat">
+                                <span class="stat-label">Documents Missed:</span>
+                                <span id="finalMissed">0</span>
+                            </div>
                         </div>
                     </div>
                     
                     <div id="manualModeMessage" class="mode-message hidden">
-                        <h3>📝 Manual Mode Complete!</h3>
-                        <p>You've experienced the challenges of manual document processing.</p>
-                        <p><strong>Ready to see the power of AI?</strong></p>
-                        <p>Try AI Agent Mode to see how artificial intelligence can dramatically improve your processing efficiency!</p>
+                        <h3>📝 Manual Mode Results</h3>
+                        <p>You've experienced the challenges of manual document processing:</p>
+                        <ul class="results-list">
+                            <li>❌ Slow shooting with cooldown delays</li>
+                            <li>❌ Inaccurate shots with spread</li>
+                            <li>❌ Unknown document values</li>
+                            <li>❌ Limited processing efficiency</li>
+                        </ul>
+                        <div class="comparison-box">
+                            <h4>🚀 Ready to see the power of AI?</h4>
+                            <p>Try AI Agent Mode to experience:</p>
+                            <ul class="ai-benefits">
+                                <li>✅ 5x faster shooting</li>
+                                <li>✅ Perfect accuracy</li>
+                                <li>✅ Pre-classified documents</li>
+                                <li>✅ AI agents auto-sort documents</li>
+                            </ul>
+                        </div>
                     </div>
                     
                     <div id="aiModeMessage" class="mode-message hidden">
-                        <h3>🤖 AI Agent Mode Complete!</h3>
+                        <h3>🤖 AI Agent Mode Results</h3>
                         <p>You've experienced the power of AI-assisted document processing!</p>
-                        <p>Notice the difference in efficiency, accuracy, and automation.</p>
+                        <ul class="results-list">
+                            <li>✅ 5x faster shooting (100ms cooldown)</li>
+                            <li>✅ Perfect accuracy with no spread</li>
+                            <li>✅ Pre-classified document values</li>
+                            <li>✅ AI agents automatically sort documents</li>
+                            <li>✅ Secondary agent handles low-value cases</li>
+                        </ul>
+                        <div class="comparison-box">
+                            <h4>📊 Notice the difference?</h4>
+                            <p>Compare your results with manual mode to see the dramatic improvement in efficiency, accuracy, and automation!</p>
+                        </div>
                     </div>
                     
                     <div class="restart-options">
-                        <h3>Play Again?</h3>
+                        <h3>🎮 What's Next?</h3>
                         <div class="restart-buttons">
-                            <button id="restartManual" class="restart-btn manual">Manual Mode</button>
-                            <button id="restartAI" class="restart-btn ai">AI Agent Mode</button>
+                            <button id="restartManual" class="restart-btn manual">Try Manual Mode</button>
+                            <button id="restartAI" class="restart-btn ai">Try AI Agent Mode</button>
                         </div>
+                        <p class="restart-note">Switch modes to compare the difference in processing efficiency!</p>
                     </div>
                 </div>
             </div>

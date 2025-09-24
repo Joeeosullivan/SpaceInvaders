@@ -243,7 +243,7 @@ class DocumentProcessingGame {
         
         // Make documents fall faster as time progresses
         const timeProgress = (60 - this.gameTime) / 60; // 0 to 1 as time progresses
-        const speedMultiplier = 1 + (timeProgress * 1.5); // 1x to 2.5x speed
+        const speedMultiplier = 1 + (timeProgress * 1.05); // 1x to 2.05x speed (30% reduction)
         doc.speed *= speedMultiplier;
         
         this.documents.push(doc);
@@ -255,7 +255,7 @@ class DocumentProcessingGame {
         
         // Spawn documents with progressive difficulty
         const timeProgress = (60 - this.gameTime) / 60; // 0 to 1 as time progresses
-        const difficultyMultiplier = 1 + (timeProgress * 2); // 1x to 3x spawn rate
+        const difficultyMultiplier = 1 + (timeProgress * 1.4); // 1x to 2.4x spawn rate (30% reduction)
         const currentSpawnRate = this.documentSpawnRate * difficultyMultiplier;
         
         if (Math.random() < currentSpawnRate) {
@@ -498,7 +498,7 @@ class Player {
         this.y = y;
         this.width = 60;
         this.height = 40;
-        this.speed = 12; // Increased from 8 to 12 for even faster movement
+        this.speed = 8.4; // Scaled back by 30% from 12 to 8.4
         this.lastShot = 0;
         this.shootCooldown = 500; // ms between shots in manual mode
     }
@@ -600,7 +600,7 @@ class Document {
         this.y = y;
         this.width = 50;
         this.height = 60;
-        this.speed = 2 + Math.random() * 3; // Increased from 1-3 to 2-5
+        this.speed = 1.4 + Math.random() * 2.1; // Scaled back by 30% from 2-5 to 1.4-3.5
         this.type = type;
         this.isClassified = isClassified;
         this.lassoed = false;
@@ -625,7 +625,7 @@ class Document {
         
         // Move towards target position if lassoed (much faster horizontal movement)
         if (this.targetX !== null) {
-            const moveSpeed = 12; // Increased from 8 to 12 for even faster movement
+            const moveSpeed = 8.4; // Scaled back by 30% from 12 to 8.4
             if (this.x < this.targetX) {
                 this.x = Math.min(this.x + moveSpeed, this.targetX);
             } else if (this.x > this.targetX) {
@@ -861,7 +861,7 @@ class SubAgent {
         this.width = 40;
         this.height = 30;
         this.lastShot = 0;
-        this.shootInterval = 150; // Even faster fire rate for better coverage
+        this.shootInterval = 195; // Scaled back by 30% from 150ms to 195ms
     }
     
     update(documents, bullets) {

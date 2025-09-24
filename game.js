@@ -111,21 +111,31 @@ class DocumentProcessingGame {
     }
     
     showScreen(screenName) {
+        console.log('Showing screen:', screenName);
+        
         // Hide all screens
         document.querySelectorAll('.game-screen').forEach(screen => {
             screen.classList.add('hidden');
         });
         
         // Show target screen
-        document.getElementById(screenName + 'Screen').classList.remove('hidden');
-        this.currentScreen = screenName;
+        const targetScreen = document.getElementById(screenName + 'Screen');
+        if (targetScreen) {
+            targetScreen.classList.remove('hidden');
+            this.currentScreen = screenName;
+            console.log('Screen shown:', screenName);
+        } else {
+            console.error('Screen not found:', screenName + 'Screen');
+        }
         
         // Show/hide game UI
         const gameUI = document.getElementById('gameUI');
         if (screenName === 'game') {
             gameUI.classList.remove('hidden');
+            console.log('Game UI shown');
         } else {
             gameUI.classList.add('hidden');
+            console.log('Game UI hidden');
         }
     }
     
@@ -151,12 +161,39 @@ class DocumentProcessingGame {
     }
     
     startGame() {
+        console.log('Starting game with mode:', this.gameMode);
+        
+        // Reset all game state
         this.gameRunning = true;
         this.gameStartTime = Date.now();
         this.gameTime = 60;
+        this.score = 0;
+        this.processedDocs = 0;
+        this.missedDocs = 0;
+        this.totalDocs = 0;
+        this.revenue = 0;
+        this.bullets = [];
+        this.documents = [];
+        this.particles = [];
+        this.player = new Player(this.width / 2, this.height - 50);
+        this.lastDocumentSpawn = 0;
+        
+        // Initialize agents based on mode
+        if (this.gameMode === 'ai') {
+            this.mainAgent = new MainAgent();
+            this.subAgent = new SubAgent();
+            console.log('AI agents initialized');
+        } else {
+            this.mainAgent = null;
+            this.subAgent = null;
+            console.log('Manual mode - no AI agents');
+        }
+        
         this.showScreen('game');
         this.updateMetrics();
         this.updateTimeBar();
+        
+        console.log('Game started successfully');
     }
     
     restart() {
@@ -199,7 +236,7 @@ class DocumentProcessingGame {
         }
         
         // Update player
-        this.player.update(this.keys, this.gameMode);
+        this.player.update(this.keys, this.gameMode, this.width);
         
         // Handle shooting (player always shoots manually)
         if (this.keys['Space'] && this.player.canShoot(this.gameMode)) {
@@ -438,12 +475,12 @@ class Player {
         this.shootCooldown = 500; // ms between shots in manual mode
     }
     
-    update(keys, mode) {
-        // Movement
+    update(keys, mode, canvasWidth = 1200) {
+        // Movement - use dynamic canvas width
         if (keys['ArrowLeft'] && this.x > 0) {
             this.x -= this.speed;
         }
-        if (keys['ArrowRight'] && this.x < 800 - this.width) {
+        if (keys['ArrowRight'] && this.x < canvasWidth - this.width) {
             this.x += this.speed;
         }
     }

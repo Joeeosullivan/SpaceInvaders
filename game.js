@@ -191,7 +191,7 @@ class DocumentProcessingGame {
     }
     
     update() {
-        if (!this.gameRunning) return;
+        if (!this.gameRunning || this.currentScreen !== 'game') return;
         
         // Spawn documents
         if (Math.random() < this.documentSpawnRate) {
@@ -250,6 +250,7 @@ class DocumentProcessingGame {
         // Check game over conditions
         if (this.missedDocs > 20 || this.gameTime <= 0) {
             this.gameOver();
+            return; // Stop updating when game is over
         }
     }
     
@@ -327,22 +328,26 @@ class DocumentProcessingGame {
     }
     
     updateTimeBar() {
-        if (this.gameRunning) {
+        if (this.gameRunning && this.currentScreen === 'game') {
             const elapsed = (Date.now() - this.gameStartTime) / 1000;
             this.gameTime = Math.max(0, 60 - elapsed);
             
             const percentage = (this.gameTime / 60) * 100;
-            document.getElementById('timeBar').style.width = percentage + '%';
-            document.getElementById('timeText').textContent = Math.ceil(this.gameTime) + 's';
+            const timeBarElement = document.getElementById('timeBar');
+            const timeTextElement = document.getElementById('timeText');
             
-            // Change color based on time remaining
-            const timeBar = document.getElementById('timeBar');
-            if (this.gameTime > 30) {
-                timeBar.style.background = 'linear-gradient(90deg, #4CAF50 0%, #FFC107 50%, #FF5722 100%)';
-            } else if (this.gameTime > 10) {
-                timeBar.style.background = 'linear-gradient(90deg, #FFC107 0%, #FF5722 100%)';
-            } else {
-                timeBar.style.background = '#FF5722';
+            if (timeBarElement && timeTextElement) {
+                timeBarElement.style.width = percentage + '%';
+                timeTextElement.textContent = Math.ceil(this.gameTime) + 's';
+                
+                // Change color based on time remaining
+                if (this.gameTime > 30) {
+                    timeBarElement.style.background = 'linear-gradient(90deg, #4CAF50 0%, #FFC107 50%, #FF5722 100%)';
+                } else if (this.gameTime > 10) {
+                    timeBarElement.style.background = 'linear-gradient(90deg, #FFC107 0%, #FF5722 100%)';
+                } else {
+                    timeBarElement.style.background = '#FF5722';
+                }
             }
         }
     }
@@ -357,6 +362,18 @@ class DocumentProcessingGame {
         document.getElementById('finalRevenue').textContent = '$' + this.revenue.toLocaleString();
         document.getElementById('finalProcessed').textContent = this.processedDocs;
         
+        // Show appropriate message based on mode
+        const manualMessage = document.getElementById('manualModeMessage');
+        const aiMessage = document.getElementById('aiModeMessage');
+        
+        if (this.gameMode === 'manual') {
+            manualMessage.classList.remove('hidden');
+            aiMessage.classList.add('hidden');
+        } else {
+            manualMessage.classList.add('hidden');
+            aiMessage.classList.remove('hidden');
+        }
+        
         this.showScreen('over');
     }
     
@@ -368,19 +385,22 @@ class DocumentProcessingGame {
         // Draw stars
         this.drawStars();
         
-        // Draw game objects
-        this.player.render(this.ctx);
-        
-        this.bullets.forEach(bullet => bullet.render(this.ctx));
-        this.documents.forEach(doc => doc.render(this.ctx));
-        this.particles.forEach(particle => particle.render(this.ctx));
-        
-        // Draw AI agents
-        if (this.mainAgent) {
-            this.mainAgent.render(this.ctx);
-        }
-        if (this.subAgent) {
-            this.subAgent.render(this.ctx);
+        // Only render game objects when actually playing
+        if (this.gameRunning && this.currentScreen === 'game') {
+            // Draw game objects
+            this.player.render(this.ctx);
+            
+            this.bullets.forEach(bullet => bullet.render(this.ctx));
+            this.documents.forEach(doc => doc.render(this.ctx));
+            this.particles.forEach(particle => particle.render(this.ctx));
+            
+            // Draw AI agents
+            if (this.mainAgent) {
+                this.mainAgent.render(this.ctx);
+            }
+            if (this.subAgent) {
+                this.subAgent.render(this.ctx);
+            }
         }
         
         // Draw mode indicator

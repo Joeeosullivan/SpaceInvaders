@@ -783,7 +783,7 @@ class MainAgent {
         // Robot label
         ctx.fillStyle = '#1976D2';
         ctx.font = '10px Arial';
-        ctx.fillText('MAIN', this.x + 2, this.y + this.height + 12);
+        ctx.fillText('SORTER', this.x + 2, this.y + this.height + 12);
         
         // Draw lassos
         this.lassos.forEach(lasso => lasso.render(ctx));
@@ -861,7 +861,7 @@ class SubAgent {
         this.width = 40;
         this.height = 30;
         this.lastShot = 0;
-        this.shootInterval = 500;
+        this.shootInterval = 200; // Increased fire rate from 500ms to 200ms
     }
     
     update(documents, bullets) {

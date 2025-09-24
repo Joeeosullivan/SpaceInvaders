@@ -1,9 +1,19 @@
 class DocumentProcessingGame {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
+        console.log('Canvas element:', this.canvas);
+        
+        if (!this.canvas) {
+            console.error('Canvas element not found!');
+            return;
+        }
+        
         this.ctx = this.canvas.getContext('2d');
         this.width = this.canvas.width;
         this.height = this.canvas.height;
+        
+        console.log('Canvas initialized:', this.width, 'x', this.height);
+        console.log('Canvas context:', this.ctx);
         
         // Game state
         this.gameRunning = false;
@@ -415,15 +425,24 @@ class DocumentProcessingGame {
     }
     
     render() {
-        // Clear canvas
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        // Clear canvas with solid background
+        this.ctx.fillStyle = '#0a0a0a';
         this.ctx.fillRect(0, 0, this.width, this.height);
         
         // Draw stars
         this.drawStars();
         
+        // Always draw a test rectangle to verify canvas is working
+        this.ctx.fillStyle = '#4CAF50';
+        this.ctx.fillRect(50, 50, 100, 50);
+        this.ctx.fillStyle = 'white';
+        this.ctx.font = '16px Arial';
+        this.ctx.fillText('Canvas Working', 60, 80);
+        
         // Only render game objects when actually playing
         if (this.gameRunning && this.currentScreen === 'game') {
+            console.log('Rendering game objects...');
+            
             // Draw game objects
             this.player.render(this.ctx);
             
@@ -438,6 +457,12 @@ class DocumentProcessingGame {
             if (this.subAgent) {
                 this.subAgent.render(this.ctx);
             }
+        } else {
+            // Show current state
+            this.ctx.fillStyle = 'white';
+            this.ctx.font = '20px Arial';
+            this.ctx.fillText(`Game Running: ${this.gameRunning}`, 200, 100);
+            this.ctx.fillText(`Current Screen: ${this.currentScreen}`, 200, 130);
         }
         
         // Draw mode indicator
@@ -460,6 +485,14 @@ class DocumentProcessingGame {
     gameLoop() {
         this.update();
         this.render();
+        
+        // Debug: Log every 60 frames (about once per second)
+        if (!this.frameCount) this.frameCount = 0;
+        this.frameCount++;
+        if (this.frameCount % 60 === 0) {
+            console.log('Game loop running, frame:', this.frameCount, 'Game running:', this.gameRunning, 'Screen:', this.currentScreen);
+        }
+        
         requestAnimationFrame(() => this.gameLoop());
     }
 }

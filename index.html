@@ -5,8 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Processing Space Invaders</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Fallback styles to verify CSS is working */
+        body { 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .debug-test {
+            background: red;
+            color: white;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
+    <div class="debug-test">CSS Loading Test - If you see this in red, CSS is working!</div>
     <div class="game-container">
         <header class="game-header">
             <h1>📄 Document Processing Space Invaders</h1>
@@ -105,6 +120,17 @@
         </div>
     </div>
     
+    <script>
+        // Debug script to verify JavaScript is loading
+        console.log('JavaScript is loading...');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, game should initialize...');
+            const debugDiv = document.querySelector('.debug-test');
+            if (debugDiv) {
+                debugDiv.innerHTML += ' | JavaScript is working!';
+            }
+        });
+    </script>
     <script src="game.js"></script>
 </body>
 </html>

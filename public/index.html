@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Processing Space Invaders</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>📄 Document Processing Space Invaders</h1>
+            <p>Help the case analyst process B2B lending documents!</p>
+        </header>
+        
+        <div class="controls-panel">
+            <div class="mode-selector">
+                <button id="manualMode" class="mode-btn active">Manual Mode</button>
+                <button id="aiMode" class="mode-btn">AI Agent Mode</button>
+            </div>
+            
+            <div class="metrics-display">
+                <div class="metric">
+                    <span class="metric-label">Process Rate:</span>
+                    <span id="processRate" class="metric-value">0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Revenue:</span>
+                    <span id="revenue" class="metric-value">$0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Missed:</span>
+                    <span id="missed" class="metric-value">0%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Documents Processed:</span>
+                    <span id="processed" class="metric-value">0</span>
+                </div>
+            </div>
+            
+            <div class="time-bar-container">
+                <div class="time-bar-label">Time Remaining:</div>
+                <div class="time-bar">
+                    <div id="timeBar" class="time-bar-fill"></div>
+                </div>
+                <div id="timeText" class="time-text">60s</div>
+            </div>
+        </div>
+        
+        <div class="game-area">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            <div class="game-overlay">
+                <div id="startScreen" class="start-screen">
+                    <div class="start-content">
+                        <h2>🚀 DOCUMENT PROCESSING SPACE INVADERS</h2>
+                        <div class="mode-selection">
+                            <h3>Choose Your Starting Mode:</h3>
+                            <div class="start-mode-buttons">
+                                <button id="startManual" class="start-mode-btn manual">Manual Mode</button>
+                                <button id="startAI" class="start-mode-btn ai">AI Agent Mode</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="gameOver" class="game-over hidden">
+                    <h2>Game Over!</h2>
+                    <p>Final Score: <span id="finalScore">0</span></p>
+                    <div class="restart-options">
+                        <h3>Choose Mode for Next Game:</h3>
+                        <div class="restart-mode-buttons">
+                            <button id="restartManual" class="restart-mode-btn manual">Manual Mode</button>
+                            <button id="restartAI" class="restart-mode-btn ai">AI Agent Mode</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-info-panel">
+            <div class="mission-info">
+                <h3>🎯 Mission</h3>
+                <p>Process B2B lending documents before they escape!</p>
+                <p>Maximize revenue by hitting high-value documents</p>
+            </div>
+            
+            <div class="controls-info">
+                <h3>🎮 Controls</h3>
+                <p><strong>Arrow Keys:</strong> Move | <strong>Spacebar:</strong> Shoot | <strong>M:</strong> Toggle Mode</p>
+            </div>
+            
+            <div class="document-legend">
+                <h3>📋 Document Values</h3>
+                <div class="doc-types-compact">
+                    <span class="doc-type-compact high">🟢 $1000+</span>
+                    <span class="doc-type-compact medium">🟡 $500-999</span>
+                    <span class="doc-type-compact low">🔴 $100-499</span>
+                    <span class="doc-type-compact none">⚫ $0</span>
+                </div>
+            </div>
+            
+            <div class="ai-features">
+                <h3>🤖 AI Features</h3>
+                <p>✓ Faster shooting ✓ Perfect accuracy ✓ Auto-classification ✓ Smart targeting</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>

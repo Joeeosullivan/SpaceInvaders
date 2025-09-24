@@ -429,7 +429,7 @@ class DocumentProcessingGame {
             aiMessage.classList.remove('hidden');
         }
         
-        this.showScreen('over');
+        this.showScreen('gameOver');
     }
     
     render() {
@@ -488,7 +488,7 @@ class Player {
         this.y = y;
         this.width = 60;
         this.height = 40;
-        this.speed = 5;
+        this.speed = 8; // Increased from 5 to 8
         this.lastShot = 0;
         this.shootCooldown = 500; // ms between shots in manual mode
     }
@@ -590,7 +590,7 @@ class Document {
         this.y = y;
         this.width = 50;
         this.height = 60;
-        this.speed = 1 + Math.random() * 2;
+        this.speed = 2 + Math.random() * 3; // Increased from 1-3 to 2-5
         this.type = type;
         this.isClassified = isClassified;
         this.lassoed = false;
@@ -615,7 +615,7 @@ class Document {
         
         // Move towards target position if lassoed (much faster horizontal movement)
         if (this.targetX !== null) {
-            const moveSpeed = 8; // Increased from 2 to 8 for much faster movement
+            const moveSpeed = 12; // Increased from 8 to 12 for even faster movement
             if (this.x < this.targetX) {
                 this.x = Math.min(this.x + moveSpeed, this.targetX);
             } else if (this.x > this.targetX) {

@@ -861,17 +861,26 @@ class SubAgent {
         this.width = 40;
         this.height = 30;
         this.lastShot = 0;
-        this.shootInterval = 200; // Increased fire rate from 500ms to 200ms
+        this.shootInterval = 150; // Even faster fire rate for better coverage
     }
     
     update(documents, bullets) {
-        // Find low-value documents to auto-target
-        const lowValueDocs = documents.filter(doc => 
-            doc.type === 'low' && doc.y > 0 && doc.y < 400 && !doc.lassoed
+        // Find ALL documents in the left quadrant to auto-target
+        const leftQuadrantDocs = documents.filter(doc => 
+            doc.x < 300 && // Left side of screen (quarter of 1200px width)
+            doc.y > 0 && 
+            doc.y < 500 && 
+            !doc.lassoed
         );
         
-        if (lowValueDocs.length > 0 && Date.now() - this.lastShot > this.shootInterval) {
-            const target = lowValueDocs[0];
+        if (leftQuadrantDocs.length > 0 && Date.now() - this.lastShot > this.shootInterval) {
+            // Prioritize by value: low-value first, then medium, then high
+            leftQuadrantDocs.sort((a, b) => {
+                const valueOrder = { 'low': 0, 'medium': 1, 'high': 2, 'no-value': 3 };
+                return valueOrder[a.type] - valueOrder[b.type];
+            });
+            
+            const target = leftQuadrantDocs[0];
             bullets.push(new Bullet(
                 this.x + this.width / 2,
                 this.y,
@@ -945,6 +954,13 @@ class SubAgent {
         ctx.fillStyle = '#D84315';
         ctx.font = '8px Arial';
         ctx.fillText('SNIPER', this.x - 2, this.y + this.height + 10);
+        
+        // Show coverage area (left quadrant)
+        ctx.strokeStyle = 'rgba(255, 87, 34, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]);
+        ctx.strokeRect(0, 0, 300, 500);
+        ctx.setLineDash([]);
     }
 }
 

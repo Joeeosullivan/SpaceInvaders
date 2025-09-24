@@ -5,132 +5,153 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Processing Space Invaders</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* Fallback styles to verify CSS is working */
-        body { 
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .debug-test {
-            background: red;
-            color: white;
-            padding: 10px;
-            margin: 10px 0;
-        }
-    </style>
 </head>
 <body>
-    <div class="debug-test">CSS Loading Test - If you see this in red, CSS is working!</div>
-    <div class="game-container">
-        <header class="game-header">
-            <h1>📄 Document Processing Space Invaders</h1>
-            <p>Help the case analyst process B2B lending documents!</p>
-        </header>
-        
-        <div class="controls-panel">
-            <div class="mode-selector">
-                <button id="manualMode" class="mode-btn active">Manual Mode</button>
-                <button id="aiMode" class="mode-btn">AI Agent Mode</button>
-            </div>
-            
-            <div class="metrics-display">
-                <div class="metric">
-                    <span class="metric-label">Process Rate:</span>
-                    <span id="processRate" class="metric-value">0%</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Revenue:</span>
-                    <span id="revenue" class="metric-value">$0</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Missed:</span>
-                    <span id="missed" class="metric-value">0%</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Documents Processed:</span>
-                    <span id="processed" class="metric-value">0</span>
+    <div class="fullscreen-game">
+        <canvas id="gameCanvas" width="1200" height="800"></canvas>
+        <div class="game-overlay">
+            <!-- Name Entry Screen -->
+            <div id="nameScreen" class="game-screen">
+                <div class="screen-content">
+                    <h1>🚀 DOCUMENT PROCESSING SPACE INVADERS</h1>
+                    <p class="subtitle">Help the case analyst process B2B lending documents!</p>
+                    <div class="name-entry">
+                        <h2>Enter Your Name</h2>
+                        <input type="text" id="playerName" placeholder="Case Analyst Name" maxlength="20">
+                        <button id="continueBtn" class="continue-btn">Continue</button>
+                    </div>
                 </div>
             </div>
             
-            <div class="time-bar-container">
-                <div class="time-bar-label">Time Remaining:</div>
-                <div class="time-bar">
-                    <div id="timeBar" class="time-bar-fill"></div>
+            <!-- Mode Selection Screen -->
+            <div id="modeScreen" class="game-screen hidden">
+                <div class="screen-content">
+                    <h1>Welcome, <span id="displayName">Player</span>!</h1>
+                    <h2>Choose Your Processing Mode</h2>
+                    
+                    <div class="mode-comparison">
+                        <div class="mode-card manual">
+                            <h3>📝 Manual Mode</h3>
+                            <div class="mode-features">
+                                <p>❌ Slow shooting (500ms cooldown)</p>
+                                <p>❌ Inaccurate shots with spread</p>
+                                <p>❌ Unknown document values</p>
+                                <p>❌ Limited processing efficiency</p>
+                            </div>
+                            <button id="selectManual" class="mode-select-btn manual">Choose Manual</button>
+                        </div>
+                        
+                        <div class="mode-card ai">
+                            <h3>🤖 AI Agent Mode</h3>
+                            <div class="mode-features">
+                                <p>✅ 5x faster shooting (100ms cooldown)</p>
+                                <p>✅ Perfect accuracy</p>
+                                <p>✅ Pre-classified document values</p>
+                                <p>✅ AI agents auto-sort documents</p>
+                                <p>✅ Secondary agent handles low-value docs</p>
+                            </div>
+                            <button id="selectAI" class="mode-select-btn ai">Choose AI Agent</button>
+                        </div>
+                    </div>
                 </div>
-                <div id="timeText" class="time-text">60s</div>
             </div>
-        </div>
-        
-        <div class="game-area">
-            <canvas id="gameCanvas" width="800" height="600"></canvas>
-            <div class="game-overlay">
-                <div id="startScreen" class="start-screen">
-                    <div class="start-content">
-                        <h2>🚀 DOCUMENT PROCESSING SPACE INVADERS</h2>
-                        <div class="mode-selection">
-                            <h3>Choose Your Starting Mode:</h3>
-                            <div class="start-mode-buttons">
-                                <button id="startManual" class="start-mode-btn manual">Manual Mode</button>
-                                <button id="startAI" class="start-mode-btn ai">AI Agent Mode</button>
+            
+            <!-- Game Start Screen -->
+            <div id="playScreen" class="game-screen hidden">
+                <div class="screen-content">
+                    <h1>Ready to Process Documents?</h1>
+                    <div class="game-info">
+                        <div class="info-section">
+                            <h3>🎯 Mission</h3>
+                            <p>Process B2B lending documents before they escape!</p>
+                            <p>Maximize revenue by hitting high-value documents</p>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>🎮 Controls</h3>
+                            <p><strong>Arrow Keys:</strong> Move | <strong>Spacebar:</strong> Shoot | <strong>M:</strong> Toggle Mode</p>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3>📋 Document Values</h3>
+                            <div class="doc-values">
+                                <span class="doc-value high">🟢 $1000+</span>
+                                <span class="doc-value medium">🟡 $500-999</span>
+                                <span class="doc-value low">🔴 $100-499</span>
+                                <span class="doc-value none">⚫ $0</span>
                             </div>
                         </div>
                     </div>
+                    <button id="playBtn" class="play-btn">🚀 START GAME</button>
                 </div>
-                <div id="gameOver" class="game-over hidden">
-                    <h2>Game Over!</h2>
-                    <p>Final Score: <span id="finalScore">0</span></p>
+            </div>
+            
+            <!-- Game Over Screen -->
+            <div id="gameOverScreen" class="game-screen hidden">
+                <div class="screen-content">
+                    <h1>Game Over!</h1>
+                    <div class="final-stats">
+                        <h2>Final Score: <span id="finalScore">0</span></h2>
+                        <div class="stats-grid">
+                            <div class="stat">
+                                <span class="stat-label">Process Rate:</span>
+                                <span id="finalProcessRate">0%</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Revenue:</span>
+                                <span id="finalRevenue">$0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Documents Processed:</span>
+                                <span id="finalProcessed">0</span>
+                            </div>
+                        </div>
+                    </div>
                     <div class="restart-options">
-                        <h3>Choose Mode for Next Game:</h3>
-                        <div class="restart-mode-buttons">
-                            <button id="restartManual" class="restart-mode-btn manual">Manual Mode</button>
-                            <button id="restartAI" class="restart-mode-btn ai">AI Agent Mode</button>
+                        <h3>Play Again?</h3>
+                        <div class="restart-buttons">
+                            <button id="restartManual" class="restart-btn manual">Manual Mode</button>
+                            <button id="restartAI" class="restart-btn ai">AI Agent Mode</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <div class="game-info-panel">
-            <div class="mission-info">
-                <h3>🎯 Mission</h3>
-                <p>Process B2B lending documents before they escape!</p>
-                <p>Maximize revenue by hitting high-value documents</p>
-            </div>
-            
-            <div class="controls-info">
-                <h3>🎮 Controls</h3>
-                <p><strong>Arrow Keys:</strong> Move | <strong>Spacebar:</strong> Shoot | <strong>M:</strong> Toggle Mode</p>
-            </div>
-            
-            <div class="document-legend">
-                <h3>📋 Document Values</h3>
-                <div class="doc-types-compact">
-                    <span class="doc-type-compact high">🟢 $1000+</span>
-                    <span class="doc-type-compact medium">🟡 $500-999</span>
-                    <span class="doc-type-compact low">🔴 $100-499</span>
-                    <span class="doc-type-compact none">⚫ $0</span>
+        <!-- In-Game UI -->
+        <div id="gameUI" class="game-ui hidden">
+            <div class="ui-top">
+                <div class="mode-indicator">
+                    <span id="currentMode">MANUAL</span>
                 </div>
-            </div>
-            
-            <div class="ai-features">
-                <h3>🤖 AI Features</h3>
-                <p>✓ Faster shooting ✓ Perfect accuracy ✓ Auto-classification ✓ Smart targeting</p>
+                <div class="metrics">
+                    <div class="metric">
+                        <span class="metric-label">Process Rate:</span>
+                        <span id="processRate" class="metric-value">0%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Revenue:</span>
+                        <span id="revenue" class="metric-value">$0</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Missed:</span>
+                        <span id="missed" class="metric-value">0%</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Processed:</span>
+                        <span id="processed" class="metric-value">0</span>
+                    </div>
+                </div>
+                <div class="time-display">
+                    <div class="time-bar">
+                        <div id="timeBar" class="time-bar-fill"></div>
+                    </div>
+                    <span id="timeText" class="time-text">60s</span>
+                </div>
             </div>
         </div>
     </div>
     
-    <script>
-        // Debug script to verify JavaScript is loading
-        console.log('JavaScript is loading...');
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, game should initialize...');
-            const debugDiv = document.querySelector('.debug-test');
-            if (debugDiv) {
-                debugDiv.innerHTML += ' | JavaScript is working!';
-            }
-        });
-    </script>
     <script src="game.js"></script>
 </body>
 </html>

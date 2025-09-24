@@ -6,15 +6,17 @@ class DocumentProcessingGame {
         this.height = this.canvas.height;
         
         // Game state
-        this.gameRunning = false; // Start with start screen
-        this.gameMode = 'manual'; // 'manual' or 'ai'
+        this.gameRunning = false;
+        this.gameMode = 'manual';
+        this.playerName = 'Player';
         this.score = 0;
         this.processedDocs = 0;
         this.missedDocs = 0;
         this.totalDocs = 0;
         this.revenue = 0;
-        this.gameTime = 60; // 60 seconds
+        this.gameTime = 60;
         this.gameStartTime = 0;
+        this.currentScreen = 'name'; // 'name', 'mode', 'play', 'game', 'over'
         
         // Game objects
         this.player = new Player(this.width / 2, this.height - 50);
@@ -38,24 +40,32 @@ class DocumentProcessingGame {
     }
     
     setupEventListeners() {
-        // Mode switching (only allowed before game starts)
-        document.getElementById('manualMode').addEventListener('click', () => {
-            if (!this.gameRunning) this.setMode('manual');
-        });
-        document.getElementById('aiMode').addEventListener('click', () => {
-            if (!this.gameRunning) this.setMode('ai');
+        // Name entry
+        document.getElementById('continueBtn').addEventListener('click', () => {
+            const name = document.getElementById('playerName').value.trim();
+            if (name) {
+                this.playerName = name;
+                document.getElementById('displayName').textContent = name;
+                this.showScreen('mode');
+            }
         });
         
-        // Start screen buttons
-        document.getElementById('startManual').addEventListener('click', () => {
+        // Mode selection
+        document.getElementById('selectManual').addEventListener('click', () => {
             this.setMode('manual');
-            this.start();
+            this.showScreen('play');
         });
-        document.getElementById('startAI').addEventListener('click', () => {
+        document.getElementById('selectAI').addEventListener('click', () => {
             this.setMode('ai');
-            this.start();
+            this.showScreen('play');
         });
         
+        // Play button
+        document.getElementById('playBtn').addEventListener('click', () => {
+            this.startGame();
+        });
+        
+        // Restart buttons
         document.getElementById('restartManual').addEventListener('click', () => {
             this.setMode('manual');
             this.restart();
@@ -63,6 +73,13 @@ class DocumentProcessingGame {
         document.getElementById('restartAI').addEventListener('click', () => {
             this.setMode('ai');
             this.restart();
+        });
+        
+        // Enter key for name input
+        document.getElementById('playerName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('continueBtn').click();
+            }
         });
         
         // Keyboard controls
@@ -93,29 +110,39 @@ class DocumentProcessingGame {
         });
     }
     
-    setMode(mode) {
-        this.gameMode = mode;
+    showScreen(screenName) {
+        // Hide all screens
+        document.querySelectorAll('.game-screen').forEach(screen => {
+            screen.classList.add('hidden');
+        });
         
-        // Update UI
-        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active', 'ai-active'));
+        // Show target screen
+        document.getElementById(screenName + 'Screen').classList.remove('hidden');
+        this.currentScreen = screenName;
         
-        if (mode === 'manual') {
-            document.getElementById('manualMode').classList.add('active');
-            this.mainAgent = null;
-            this.subAgent = null;
+        // Show/hide game UI
+        const gameUI = document.getElementById('gameUI');
+        if (screenName === 'game') {
+            gameUI.classList.remove('hidden');
         } else {
-            document.getElementById('aiMode').classList.add('ai-active');
-            this.mainAgent = new MainAgent();
-            this.subAgent = new SubAgent();
+            gameUI.classList.add('hidden');
         }
     }
     
-    updateModeButtons() {
-        const modeButtons = document.querySelectorAll('.mode-btn');
-        if (this.gameRunning) {
-            modeButtons.forEach(btn => btn.classList.add('disabled'));
+    setMode(mode) {
+        this.gameMode = mode;
+        
+        // Update mode indicator
+        const modeIndicator = document.getElementById('currentMode');
+        modeIndicator.textContent = mode.toUpperCase();
+        modeIndicator.className = mode === 'ai' ? 'ai-mode' : '';
+        
+        if (mode === 'manual') {
+            this.mainAgent = null;
+            this.subAgent = null;
         } else {
-            modeButtons.forEach(btn => btn.classList.remove('disabled'));
+            this.mainAgent = new MainAgent();
+            this.subAgent = new SubAgent();
         }
     }
     
@@ -123,12 +150,11 @@ class DocumentProcessingGame {
         this.setMode(this.gameMode === 'manual' ? 'ai' : 'manual');
     }
     
-    start() {
+    startGame() {
         this.gameRunning = true;
         this.gameStartTime = Date.now();
-        this.gameTime = 60; // Reset to 60 seconds
-        document.getElementById('startScreen').classList.add('hidden');
-        this.updateModeButtons();
+        this.gameTime = 60;
+        this.showScreen('game');
         this.updateMetrics();
         this.updateTimeBar();
     }
@@ -147,11 +173,8 @@ class DocumentProcessingGame {
         this.particles = [];
         this.player = new Player(this.width / 2, this.height - 50);
         this.lastDocumentSpawn = 0;
-        this.mainAgent = null;
-        this.subAgent = null;
         
-        document.getElementById('gameOver').classList.add('hidden');
-        this.updateModeButtons();
+        this.showScreen('game');
         this.updateMetrics();
         this.updateTimeBar();
     }
@@ -326,9 +349,15 @@ class DocumentProcessingGame {
     
     gameOver() {
         this.gameRunning = false;
+        
+        // Update final stats
         document.getElementById('finalScore').textContent = this.score;
-        document.getElementById('gameOver').classList.remove('hidden');
-        this.updateModeButtons();
+        document.getElementById('finalProcessRate').textContent = 
+            this.totalDocs > 0 ? (this.processedDocs / this.totalDocs * 100).toFixed(1) + '%' : '0%';
+        document.getElementById('finalRevenue').textContent = '$' + this.revenue.toLocaleString();
+        document.getElementById('finalProcessed').textContent = this.processedDocs;
+        
+        this.showScreen('over');
     }
     
     render() {
@@ -368,9 +397,7 @@ class DocumentProcessingGame {
     }
     
     drawModeIndicator() {
-        this.ctx.fillStyle = this.gameMode === 'ai' ? '#2196F3' : '#4CAF50';
-        this.ctx.font = '16px Arial';
-        this.ctx.fillText(`Mode: ${this.gameMode.toUpperCase()}`, 10, 30);
+        // Mode indicator is now in the UI overlay, not on canvas
     }
     
     gameLoop() {

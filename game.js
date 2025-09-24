@@ -240,6 +240,12 @@ class DocumentProcessingGame {
         const y = -60;
         
         const doc = new Document(x, y, type, this.gameMode === 'ai');
+        
+        // Make documents fall faster as time progresses
+        const timeProgress = (60 - this.gameTime) / 60; // 0 to 1 as time progresses
+        const speedMultiplier = 1 + (timeProgress * 1.5); // 1x to 2.5x speed
+        doc.speed *= speedMultiplier;
+        
         this.documents.push(doc);
         this.totalDocs++;
     }
@@ -247,8 +253,12 @@ class DocumentProcessingGame {
     update() {
         if (!this.gameRunning || this.currentScreen !== 'game') return;
         
-        // Spawn documents
-        if (Math.random() < this.documentSpawnRate) {
+        // Spawn documents with progressive difficulty
+        const timeProgress = (60 - this.gameTime) / 60; // 0 to 1 as time progresses
+        const difficultyMultiplier = 1 + (timeProgress * 2); // 1x to 3x spawn rate
+        const currentSpawnRate = this.documentSpawnRate * difficultyMultiplier;
+        
+        if (Math.random() < currentSpawnRate) {
             this.spawnDocument();
         }
         
@@ -488,7 +498,7 @@ class Player {
         this.y = y;
         this.width = 60;
         this.height = 40;
-        this.speed = 8; // Increased from 5 to 8
+        this.speed = 12; // Increased from 8 to 12 for even faster movement
         this.lastShot = 0;
         this.shootCooldown = 500; // ms between shots in manual mode
     }
@@ -703,43 +713,77 @@ class MainAgent {
     }
     
     render(ctx) {
-        // Draw main agent with better graphics
-        // Main body with gradient
+        // Draw robot main agent
+        // Main body - metallic silver
         const gradient = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.height);
-        gradient.addColorStop(0, '#64B5F6');
-        gradient.addColorStop(1, '#1565C0');
+        gradient.addColorStop(0, '#E0E0E0');
+        gradient.addColorStop(0.5, '#BDBDBD');
+        gradient.addColorStop(1, '#757575');
         ctx.fillStyle = gradient;
         ctx.fillRect(this.x, this.y, this.width, this.height);
         
-        // Border
-        ctx.strokeStyle = '#0D47A1';
-        ctx.lineWidth = 3;
+        // Robot body panels
+        ctx.strokeStyle = '#424242';
+        ctx.lineWidth = 2;
         ctx.strokeRect(this.x, this.y, this.width, this.height);
         
-        // Inner circle
-        ctx.fillStyle = '#E3F2FD';
+        // Vertical panel lines
         ctx.beginPath();
-        ctx.arc(this.x + this.width/2, this.y + this.height/2, 12, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Target icon
-        ctx.fillStyle = '#1976D2';
-        ctx.font = '20px Arial';
-        ctx.fillText('🎯', this.x + 8, this.y + 26);
-        
-        // Antenna
-        ctx.strokeStyle = '#1976D2';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(this.x + this.width/2, this.y);
-        ctx.lineTo(this.x + this.width/2, this.y - 10);
+        ctx.moveTo(this.x + this.width/3, this.y);
+        ctx.lineTo(this.x + this.width/3, this.y + this.height);
+        ctx.moveTo(this.x + 2*this.width/3, this.y);
+        ctx.lineTo(this.x + 2*this.width/3, this.y + this.height);
         ctx.stroke();
         
-        // Status indicator
+        // Robot head/visor
+        ctx.fillStyle = '#1976D2';
+        ctx.fillRect(this.x + 5, this.y + 5, this.width - 10, 12);
+        
+        // Visor glow
+        ctx.fillStyle = '#64B5F6';
+        ctx.fillRect(this.x + 7, this.y + 7, this.width - 14, 8);
+        
+        // Robot eyes (LEDs)
+        ctx.fillStyle = '#00E676';
+        ctx.beginPath();
+        ctx.arc(this.x + 10, this.y + 11, 2, 0, Math.PI * 2);
+        ctx.arc(this.x + this.width - 10, this.y + 11, 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Robot antenna
+        ctx.strokeStyle = '#424242';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(this.x + this.width/2, this.y);
+        ctx.lineTo(this.x + this.width/2, this.y - 15);
+        ctx.stroke();
+        
+        // Antenna tip
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.arc(this.x + this.width/2, this.y - 15, 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Robot arms (lasso launchers)
+        ctx.strokeStyle = '#616161';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(this.x - 5, this.y + 15);
+        ctx.lineTo(this.x - 15, this.y + 15);
+        ctx.moveTo(this.x + this.width + 5, this.y + 15);
+        ctx.lineTo(this.x + this.width + 15, this.y + 15);
+        ctx.stroke();
+        
+        // Robot status indicator
         ctx.fillStyle = '#4CAF50';
         ctx.beginPath();
-        ctx.arc(this.x + this.width - 5, this.y + 5, 4, 0, Math.PI * 2);
+        ctx.arc(this.x + this.width - 8, this.y + 8, 3, 0, Math.PI * 2);
         ctx.fill();
+        
+        // Robot label
+        ctx.fillStyle = '#1976D2';
+        ctx.font = '10px Arial';
+        ctx.fillText('MAIN', this.x + 2, this.y + this.height + 12);
         
         // Draw lassos
         this.lassos.forEach(lasso => lasso.render(ctx));
@@ -840,35 +884,67 @@ class SubAgent {
     }
     
     render(ctx) {
-        // Draw sub-agent with better graphics
-        // Main body
-        ctx.fillStyle = '#FF5722';
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        
-        // Add gradient effect
+        // Draw robot sub-agent
+        // Main body - metallic bronze
         const gradient = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.height);
-        gradient.addColorStop(0, '#FF8A65');
+        gradient.addColorStop(0, '#FFB74D');
+        gradient.addColorStop(0.5, '#FF8A65');
         gradient.addColorStop(1, '#D84315');
         ctx.fillStyle = gradient;
         ctx.fillRect(this.x, this.y, this.width, this.height);
         
-        // Border
+        // Robot body panels
         ctx.strokeStyle = '#BF360C';
         ctx.lineWidth = 2;
         ctx.strokeRect(this.x, this.y, this.width, this.height);
         
-        // Gun barrel
+        // Horizontal panel lines
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y + this.height/3);
+        ctx.lineTo(this.x + this.width, this.y + this.height/3);
+        ctx.moveTo(this.x, this.y + 2*this.height/3);
+        ctx.lineTo(this.x + this.width, this.y + 2*this.height/3);
+        ctx.stroke();
+        
+        // Robot head/visor
+        ctx.fillStyle = '#D84315';
+        ctx.fillRect(this.x + 5, this.y + 2, this.width - 10, 8);
+        
+        // Visor glow
+        ctx.fillStyle = '#FF8A65';
+        ctx.fillRect(this.x + 7, this.y + 4, this.width - 14, 4);
+        
+        // Robot eye (LED)
+        ctx.fillStyle = '#FF1744';
+        ctx.beginPath();
+        ctx.arc(this.x + this.width/2, this.y + 6, 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Robot gun barrel
         ctx.fillStyle = '#424242';
-        ctx.fillRect(this.x + this.width - 5, this.y + 10, 8, 10);
+        ctx.fillRect(this.x + this.width - 3, this.y + 12, 12, 6);
         
-        // Icon
-        ctx.fillStyle = 'white';
-        ctx.font = '16px Arial';
-        ctx.fillText('🔫', this.x + 8, this.y + 20);
+        // Gun barrel tip
+        ctx.fillStyle = '#212121';
+        ctx.fillRect(this.x + this.width + 9, this.y + 13, 4, 4);
         
-        // Status indicator
+        // Robot arm joints
+        ctx.fillStyle = '#616161';
+        ctx.beginPath();
+        ctx.arc(this.x - 2, this.y + 8, 3, 0, Math.PI * 2);
+        ctx.arc(this.x - 2, this.y + 22, 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Robot status indicator
         ctx.fillStyle = '#4CAF50';
-        ctx.fillRect(this.x - 3, this.y - 3, 6, 6);
+        ctx.beginPath();
+        ctx.arc(this.x + this.width - 6, this.y + 4, 2, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Robot label
+        ctx.fillStyle = '#D84315';
+        ctx.font = '8px Arial';
+        ctx.fillText('SNIPER', this.x - 2, this.y + this.height + 10);
     }
 }
 

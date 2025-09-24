@@ -514,7 +514,7 @@ class Player {
     }
     
     canShoot(mode) {
-        const cooldown = mode === 'ai' ? 100 : this.shootCooldown;
+        const cooldown = mode === 'ai' ? 50 : this.shootCooldown; // AI mode: 20 shots/second (was 10)
         return Date.now() - this.lastShot > cooldown;
     }
     
